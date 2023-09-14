@@ -1,0 +1,61 @@
+{%extends 'index.html'%}
+
+{%block content%}
+
+<h1 class="display-3 mx-3">Skin Disease Detection  <h2 class="mx-3 ">(Accuracy : 87%)</h1>
+<div class="bg-image hover-overlay ripple my-3 mx-3"  id="skin_section" style="display:flex;align-items:center;justify-content:center;">
+  <img src="static\skin1.jpg" class="img w-50 " id="skin" style="border-radius:50px;" />
+  <blockquote class="blockquote text-left my-3 mx-3">
+    <center>
+      <footer style="color: red;">Skin Disease </footer>
+    </center>
+    <p>Skin diseases are conditions that affect the skin, the body's largest organ. They can range from mild to severe
+      and can be caused by a variety of factors, including genetics, infections, allergies, autoimmune disorders, and
+      environmental factors.</p>
+    <p><b> Skin cancer:</b> A disease in which abnormal cells grow and divide uncontrollably in the skin. The three main types
+      of skin cancer are basal cell carcinoma, squamous cell carcinoma, and melanoma
+    </p>
+    <br>
+      <footer class="blockquote-footer">Team Hacking Paradox </footer>
+  </blockquote>
+  </ul>
+
+</div>
+
+<hr>
+<center>
+  <form action="{{url_for('getskin')}}" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <legend class="mx-3 display-4">Let's Predict About You</legend>
+      <input type="file" class="form-control-file mx-3" id="exampleFormControlFile1" name="skin" required>
+    </div>
+    <center><button type="submit" class="btn btn-outline-dark">Predict</button></center>
+
+  </form>
+
+  <br>
+  <hr>
+</center>
+
+{%endblock%}
+
+
+{%block content2%}
+
+{% if status == true %}
+
+<a href="javascript:void(0);" class="btn-user dropdown-toggle media align-items-center" data-toggle="dropdown"
+  data-sidebar="true" aria-expanded="false">
+  <img class="mr-2" src="/static/profile.png" style="width:40px; height:40px;" alt="avatar">
+  {{ username }}
+</a>
+<ul class="dropdown-menu dropdown-menu-right" role="menu">
+  <a class="dropdown-item" href="/logout">Logout</a>
+</ul>
+{% else %}
+<a class="nav-link text-muted mx-3 slide" href="/login">
+  Login
+</a> 
+  {% endif %}
+
+{%endblock%}

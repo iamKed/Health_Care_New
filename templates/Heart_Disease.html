@@ -1,0 +1,298 @@
+{%extends "index.html" %}
+{%block content%}
+<h1 class="display-3 mx-3">Heart Disease Detection <h2 class="mx-3">(Accuracy : 94%)</h1>
+<!-- <div class="container my-3 " id="heart_section">
+  <legend>Predict Your Heart Condition Right Now</legend>
+  <form style="padding:25px;"method="post"
+    action="{{url_for('getValue')}}">
+    <div class="form">
+      <p>Please Enter the Following Details</p>
+      <hr>
+      <label for="mail">Mail-Id : </label>
+      <input type="mail" id="mail" class="form-control" name="mail">
+
+      <label for="age">Age : </label>
+      <input type="number" id="age" class="form-control" name="age" required>
+
+      <div class="input-group mb-3 my-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02">Sex : </label>
+        </div>
+
+        <select class="custom-select" id="inputGroupSelect02" name="sex">
+          <option selected value="1">Male</option>
+          <option value="0">Female</option>
+        </select>
+      </div>
+
+      <div class="input-group mb-3 my-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02">Chest-Pain Type : </label>
+        </div>
+
+        <select class="custom-select" id="inputGroupSelect02" name="chaistpain">
+          <option selected value="0">Typical Angina</option>
+          <option value="1">Atypical Angina</option>
+          <option value="2">Non-Anginal pain</option>
+          <option value="3">Asymptomatic</option>
+        </select>
+      </div>
+
+      <label for="bp">Resting Blood Pressure (in mm Hg)</label>
+      <input type="number" id="bp" class="form-control" name="bloodpressure" required>
+
+      <label for="sc">Serum Cholestrol</label>
+      <input type="number" id="sc" class="form-control" name="serum" required>
+
+      <div class="input-group mb-3 my-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02">Fasting Blood Sugar : </label>
+        </div>
+        <select class="custom-select" id="inputGroupSelect02" placeholder="Chest-Pain Type" name="bloodsugar">
+          <option selected value="0">Fasting blood sugar < 120</option>
+          <option value="1">Fasting blood sugar > 120</option>
+
+        </select>
+      </div>
+
+      <div class="input-group mb-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02">Resting Electro-cardiographic Result : </label>
+        </div>
+
+
+        <select class="custom-select" id="inputGroupSelect02" name="wave">
+          <option selected value="0">Normal</option>
+          <option value="1">Having ST-T wave abnormality</option>
+          <option value="2">Showing probable or definite left
+            ventricular hypertrophy</option>
+
+        </select>
+      </div>
+      <label for="hrate">Maximum Heart Rate Achieved</label>
+      <input type="number" id="hrate" class="form-control" name="hrate" itemid="hrate" required>
+
+
+
+      <div class="input-group mb-3 my-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02"> Exercise Induced Anigna: </label>
+        </div>
+
+        <select class="custom-select" id="inputGroupSelect01" name="anigna">
+          <option selected value="1">Yes </option>
+          <option value="0">No </option>
+        </select>
+      </div>
+
+      <label for="oldpeak"> ST depression induced by exercise relative to rest (oldpeak) : </label>
+      <input type="number" step="0.01" id="oldpeak" class="form-control" name="oldpeak" itemid="oldpeak" required>
+
+      <div class="input-group mb-3 my-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02">The slope of the peak exercise ST segment</label>
+        </div>
+
+        <select class="custom-select" id="inputGroupSelect01" name="slope">
+          <option selected value="0">0</option>
+          <option value="1">1 </option>
+          <option value="2">2 </option>
+        </select>
+      </div>
+
+      <div class="input-group mb-3 my-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02"> CA (Number of major vessels (0-3) colored by
+            flourosopy): </label>
+        </div>
+
+        <select class="custom-select" id="inputGroupSelect01" name="ca">
+          <option selected value="0">0 </option>
+          <option value="1">1 </option>
+          <option value="2">2 </option>
+          <option value="3">3 </option>
+        </select>
+      </div>
+
+      <div class="input-group mb-3 my-3">
+        <div class="input-group-append">
+          <label class="input-group-text" for="inputGroupSelect02"> Thalmessia (Thal) </label>
+        </div>
+
+        <select class="custom-select" id="inputGroupSelect01" name="thal">
+          <option selected value="0"> Normal </option>
+          <option value="1">Fixed Defect </option>
+          <option value="2"> Reversable Defect </option>
+        </select>
+      </div>
+    </div>
+    <center> <button type="submit" class="btn btn-outline-dark">Predict</button></center>
+  </form>
+  <br>
+  <hr>
+</div> -->
+
+<!-- ------------------------------------------------------------------- -->
+<div class="testbox container list-group list-group-numbered" id="heartform">
+  <form method="post" action="{{url_for('getValue')}}">
+    <h3>Please Enter the Following Details</h3>
+    <hr>
+    <br>
+    <h4 for="mail">Mail-Id : </h4>
+    <input type="mail" id="mail" class="form-control" name="mail" required>
+
+    <br>
+    <h4 for="oldpeak">1. Age : </h4>
+    <input type="number" step="0.01" id="oldpeak" class="form-control" name="age" itemid="oldpeak">
+    <br>
+
+    <div>
+      <h4>2. Gender : </h4>
+      <div class="question-answer">
+        <label><input type="radio" value="1" name="sex" />Male</label>
+        <label><input type="radio" value="0" name="sex" />Female</label>
+      </div>
+    </div>
+    <br>
+
+    <div>
+      <h4>
+        3. Chest-Pain Type :
+      </h4>
+      <div class="question-answer">
+        <select class="custom-select" id="inputGroupSelect02" name="chaistpain">
+          <option selected value="0">Typical Angina</option>
+          <option value="1">Atypical Angina</option>
+          <option value="2">Non-Anginal pain</option>
+          <option value="3">Asymptomatic</option>
+        </select>
+      </div>
+    </div>
+    <br>
+
+    <h4>4. Resting Blood Pressure (in mm Hg) : </h4>
+    <input type="number" id="bp" class="form-control" name="bloodpressure" required>
+    <br>
+
+    <h4>5. Serum Cholestrol : </h4>
+    <input type="number" id="bp" class="form-control" name="serum" required>
+    <br>
+
+    <div>
+      <h4>6. Fasting Blood Sugar > 120 ? : </h4>
+      <div class="question-answer">
+        <label><input type="radio" value="1" name="bloodsugar" />Yes</label>
+        <label><input type="radio" value="0" name="bloodsugar" />No</label>
+      </div>
+    </div>
+
+    <br>
+
+
+
+    <div>
+      <h4>7. Resting Electro-cardiographic Result : </h4>
+      <div class="question-answer">
+        <select class="custom-select" id="inputGroupSelect02" name="wave">
+          <option selected value="0">Normal</option>
+          <option value="1">Having ST-T wave abnormality</option>
+          <option value="2">Showing probable or definite left
+            ventricular hypertrophy</option>
+
+        </select>
+      </div>
+      <br>
+
+      <h4>8. Maximum Heart Rate Achieved : </h4>
+      <input type="number" id="bp" class="form-control" name="hrate" required>
+      <br>
+
+      <div>
+        <h4>9. Exercise Induced Anigna :</h4>
+        <div class="question-answer">
+          <label><input type="radio" value="1" name="anigna" />Yes</label>
+          <label><input type="radio" value="0" name="anigna" />No</label>
+
+        </div>
+      </div>
+
+      <br>
+      <h4>10. ST depression induced by exercise relative to rest (oldpeak) : </h4>
+      <input type="number" id="bp" step="0.01" class="form-control" name="oldpeak" required>
+      <br>
+
+      <div>
+        <h4>11. The slope of the peak exercise ST segment : </h4>
+        <div class="question-answer">
+          <select class="custom-select" id="inputGroupSelect01" name="slope">
+            <option selected value="0">0</option>
+            <option value="1">1 </option>
+            <option value="2">2 </option>
+          </select>
+        </div>
+      </div>
+
+      <br>
+
+      <div>
+        <h4>12. CA (Number of major vessels (0-3) colored by
+          flourosopy): </h4>
+          <div class="question-answer">
+            <select class="custom-select" id="inputGroupSelect01" name="ca">
+              <option selected value="0">0 </option>
+              <option value="1">1 </option>
+              <option value="2">2 </option>
+              <option value="3">3 </option>
+            </select>
+          </div>
+      </div>
+
+
+      <br>
+        <h4>13.Thalmessia (Thal) : </h4>
+        <div class="question-answer">
+          <select class="custom-select" id="inputGroupSelect01" name="thal">
+            <option selected value="0"> Normal </option>
+            <option value="1">Fixed Defect </option>
+            <option value="2"> Reversable Defect </option>
+          </select>
+        </div>
+
+      <br>
+
+
+      <div class="btn-block">
+        <button type="submit" class="btn btn-outline-dark" name="submit">Predict</button>
+      </div>
+  </form>
+</div>
+
+
+
+
+
+
+<!-- ------------------------------------------------------------------- -->
+
+
+{%endblock%}
+
+{%block content2%}
+
+{% if status == true %}
+
+<a href="javascript:void(0);" class="btn-user dropdown-toggle media align-items-center" data-toggle="dropdown"
+  data-sidebar="true" aria-expanded="false">
+  <img class="mr-2" src="/static/profile.png" style="width:40px; height:40px;" alt="avatar">
+  {{ username }}
+</a>
+<ul class="dropdown-menu dropdown-menu-right" role="menu">
+  <a class="dropdown-item" href="/logout">Logout</a>
+</ul>
+{% else %}
+<a class="nav-link text-muted mx-3 slide" href="/login">
+  Login
+</a> 
+  {% endif %}
+
+{%endblock%}

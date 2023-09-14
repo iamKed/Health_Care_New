@@ -1,0 +1,82 @@
+{%extends 'index.html'%}
+
+{%block content%}
+
+<h1 class="display-4 mx-3">Covid 19 Detection <h2 class="mx-3">(Accuracy : 93%)</h1>
+<div class="bg-image hover-overlay ripple my-3 mx-3" id="covid_section" style="display:flex;align-items:center;justify-content:center;">
+  <img src="static\covid1.jpg" id="covid_19" class="img w-50 " style="border-radius:50px;" />
+
+  <blockquote class="blockquote text-left my-3 mx-3">
+
+    <footer style="color: red;">Covid 😷</footer>
+    <p class="mb-0">COVID-19 is a highly contagious respiratory illness caused by the SARS-CoV-2 virus. It was first
+      identified in Wuhan, China in December 2019 and has since become a global pandemic.</p><br>
+    <p class="mb-0">
+      Symptoms of COVID-19 can range from mild to severe, and include fever, cough, shortness of breath, fatigue, body
+      aches, and loss of taste or smell. Some people may experience no symptoms at all.
+
+    </p>
+    <br>
+    <ul>
+
+      <li><a href="https://www.mygov.in/covid-19/" style="display: flex;"> Countries with the most cases:</a>
+        <p style="display: flex;">
+          United States, India, Brazil, Russia, France, Turkey, the United Kingdom, Italy, Argentina, and Colombia
+        </p>
+
+
+
+        <p class="mb-0">
+      <li><a href="https://www.mygov.in/covid-19/" style="display: flex;"> Countries with the most deaths:</a></li>
+      United States, Brazil, India, Mexico, Peru, Russia, the United Kingdom, Italy, Colombia, and Argentina.
+      </p>
+      <footer class="blockquote-footer">Team Hacking Paradox </footer>
+  </blockquote>
+  </ul>
+</div>
+<hr>
+<center>
+  <legend class="mx-3 display-4">Let's Predict About You</legend>
+</center>
+<center>
+  <form action="{{url_for('get_covid_result')}}" method="post" enctype="multipart/form-data">
+    <div class="form-group">
+      <label for="exampleFormControlFile1">Upload Chest X-Ray </label>
+      <input type="file" class="form-control-file mx-3" id="covid_image" name="covid" required>
+    </div>
+    <center>
+      <button type="submit" class="btn btn-outline-dark">Predict</button>
+      
+    </center>
+
+    
+
+
+  </form>
+  <br>
+  <hr>
+
+
+</center>
+{%endblock%}
+
+
+{%block content2%}
+
+{% if status == true %}
+
+<a href="javascript:void(0);" class="btn-user dropdown-toggle media align-items-center" data-toggle="dropdown"
+  data-sidebar="true" aria-expanded="false">
+  <img class="mr-2" src="/static/profile.png" style="width:40px; height:40px;" alt="avatar">
+  {{ username }}
+</a>
+<ul class="dropdown-menu dropdown-menu-right" role="menu">
+  <a class="dropdown-item" href="/logout">Logout</a>
+</ul>
+{% else %}
+<a class="nav-link text-muted mx-3 slide" href="/login">
+  Login
+</a> 
+  {% endif %}
+
+{%endblock%}

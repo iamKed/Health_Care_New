@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en" style="background-image: url(/static/19366.jpg);scroll-behavior: smooth; overflow-x:hidden;">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HackingParadox</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename = 'style.css') }}" />
+  <script src="{{ url_for('static', filename = 'main.js') }}"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous" />
+  <link crossorigin="anonymous" media="all" rel="stylesheet"
+    href="https://github.githubassets.com/assets/light-0946cdc16f15.css" />
+  <link crossorigin="anonymous" media="all" rel="stylesheet"
+    href="https://github.githubassets.com/assets/dark-3946c959759a.css" />
+  <link data-color-theme="light" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/light-0946cdc16f15.css" />
+  <link data-color-theme="dark" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/dark-3946c959759a.css" />
+  <link data-color-theme="dark_dimmed" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/dark_dimmed-9b9a8c91acc5.css" />
+  <link data-color-theme="dark_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/dark_high_contrast-11302a585e33.css" />
+  <link data-color-theme="dark_colorblind" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/dark_colorblind-1a4564ab0fbf.css" />
+  <link data-color-theme="light_colorblind" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/light_colorblind-12a8b2aa9101.css" />
+  <link data-color-theme="light_high_contrast" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/light_high_contrast-5924a648f3e7.css" />
+  <link data-color-theme="light_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/light_tritanopia-05358496cb79.css" />
+  <link data-color-theme="dark_tritanopia" crossorigin="anonymous" media="all" rel="stylesheet"
+    data-href="https://github.githubassets.com/assets/dark_tritanopia-aad6b801a158.css" />
+  <link rel="icon" type="image/png" href="static/Logo.png" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
+  <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" />
+  <script src="https://kit.fontawesome.com/5e2d1fd11a.js" crossorigin="anonymous"></script>
+  <link rel="icon" type="image/x-icon" href="favicon.ico" />
+</head>
+
+<body style="background-image: url(/static/19366.jpg);">
+  <nav class="w-full flex relative justify-between items-center mx-auto px-4 h-20">
+    <div class="inline-flex">
+      <a class="navbar-brand" href="/"><span style="color: #2b7e33;">Hacking</span><span
+          style="color: #000000;">Paradox</span></a>
+      <a class="nav-link text-muted mx-3" href="/#modules" id="tobedis">Modules</a>
+    </div>
+
+    <div class="flex-initial">
+      <div class="flex justify-end items-center relative">
+        <div class="block">
+          <div class="inline relative">
+            {% block content2 %}
+
+            {% endblock %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!--  <nav class="navbar navbar-expand-lg bg-body-tertiary">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/"><span style="color: #2b7e33;">Hacking</span><span
+          style="color: #000000;">Paradox</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        
+      </div>
+    </div>
+  </nav>  -->
+
+  <!--  
+  <header class="text-gray-600 body-font">
+    <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
+      <nav class="flex lg:w-2/5 flex-wrap items-center text-base md:ml-auto">
+        <a class="mr-5 hover:text-gray-900">Modules</a>
+        
+
+      </nav>
+
+      <a class="flex order-first lg:order-none lg:w-1/5 title-font font-medium items-center text-gray-900 lg:items-center lg:justify-center mb-4 md:mb-0"
+        href="/"><span style="color: #2b7e33;">Hacking</span><span style="color: #000000;">Paradox</span>
+      </a>
+      <div class="lg:w-2/5 inline-flex lg:justify-end ml-5 lg:ml-0">
+        <button
+          class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Button
+          <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            class="w-4 h-4 ml-1" viewBox="0 0 24 24">
+            <path d="M5 12h14M12 5l7 7-7 7"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>  -->
+
+  {% block content %}
+
+  {% endblock %}
+  <footer class="text-gray-600 body-font container-fluid" id="foot">
+    <div class="container py-2 mx-auto flex items-center sm:flex-row flex-col">
+      <a class="flex title-font font-medium items-center md:justify-start justify-center text-gray-900">
+        <img src="/static/Logo.png" alt="Logo" srcset="" style="width:50px;height:50px" />
+
+        <span class="ml-3 text-xl">Hacking Paradox</span>
+      </a>
+      <p class="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">
+        © 2020 Hacking Paradox —
+        <a href="https://github.com/iamKed/Health-Care" class="text-gray-600 ml-1" rel="noopener noreferrer"
+          target="_blank">@HackingParadox</a>
+      </p>
+      <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
+        <a href="https://github.com/iamKed/Health-Care" class="text-neutral-600 dark:text-neutral-200">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+            <path
+              d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
+          </svg>
+        </a>
+        <a class="ml-3 text-gray-500" href="https://www.linkedin.com/in/kedar-swami-864968221/">
+          <svg fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="0"
+            class="w-5 h-5" viewBox="0 0 24 24">
+            <path stroke="none"
+              d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"></path>
+            <circle cx="4" cy="4" r="2" stroke="none"></circle>
+          </svg>
+        </a>
+      </span>
+    </div>
+  </footer>
+
+  <div class="chatbox">
+    <div class="chatbox__support">
+      <div class="chatbox__header">
+        <div class="chatbox__image--header">
+          <img src="{{ url_for('static', filename = 'iconchat.png') }}" alt="image" />
+        </div>
+        <div class="chatbox__content--header">
+          <h4 class="chatbox__heading--header">Health Care Chatbot</h4>
+          <p class="chatbox__description--header"></p>
+        </div>
+      </div>
+      <div class="chatbox__messages">
+        <div></div>
+      </div>
+      <div class="chatbox__footer">
+        <input type="text" placeholder="Write a message..." />
+        <button class="chatbox__send--footer send__button">Send</button>
+      </div>
+    </div>
+    <div class="chatbox__button">
+      <button><img src="{{ url_for('static', filename = 'iconchat.png') }}" /></button>
+    </div>
+  </div>
+  
+
+  <script>
+    //  $SCRIPT_ROOT={{request.script_root|tojson}};
+    var $SCRIPT_ROOT = {{ request.script_root| tojson | safe }}; 
+  </script>
+  <script src="{{ url_for('static', filename = 'chat.js') }}"></script>
+
+  <!-- End of .container -->
+
+  <!-- End of .container -->
+</body>
+
+</html>
