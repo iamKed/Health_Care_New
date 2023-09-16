@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, session, jsonify
-from flask_sqlalchemy import SQLAlchemy
 import numpy as np
 import pandas as pd
 import os
@@ -7,53 +6,58 @@ from ChatBot_Response import chatbot_response
 from keras.utils import load_img, img_to_array
 from keras.models import load_model
 import warnings
-import sqlite3
+# import sqlite3
 from sqlalchemy import create_engine, select
 warnings.filterwarnings("ignore")
-conn = sqlite3.connect("instance\database.db")
-engine = create_engine("sqlite:///database.db")
+from pymongo import MongoClient
+import bcrypt
+# from cryptography.fernet import Fernet
+# Connect to the server with the hostName and portNumber.
+connection = MongoClient("localhost", 27017)
+# Connect to the Database where the images will be stored.
+db = connection['HealthCare']
 from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = b"82736781_@*@&(796*5&^5)"
 # covid_19_model = load_model(r"Trained_Models\covid_model.h5")
 # skin_model = load_model(r"Trained_Models\skin_d.h5")
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+# app.config["SQLALCHEMY_DATABASE_URI"] = "mongodb://localhost:27017"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db = SQLAlchemy(app)
+# db = SQLAlchemy(app)
 app.config["LOGIN_STATUS"] = False
 app.config["USERNAME"] = str("")
 app.config["LOGIN_COUNT"] = 0
 _answer = ""
-app.config["UPLOAD_FOLDER"] = r"static/files"
-
+# __key=Fernet.generate_key()
+# fernet=Fernet(__key)
 
 class Covid_Disease:
     _covid_19_model = load_model(r"Trained_Models\covid_model.h5")
 
     def getcovidresult(self):
         if request.method == "POST":
-            _img = request.files["covid"]
-            _file_path = os.path.join(
+            __img = request.files["covid"]
+            __file_path = os.path.join(
                 os.path.abspath(os.path.dirname(__file__)),
                 app.config["UPLOAD_FOLDER"],
-                secure_filename(_img.filename),
+                secure_filename(__img.filename),
             )
-            _img.save(_file_path)
-            _xtest_image = load_img(_file_path, target_size=(100, 100, 3))
-            _xtest_image = img_to_array(_xtest_image)
-            _xtest_image = np.expand_dims(_xtest_image, axis=0)
-            _predictions = (self._covid_19_model.predict(_xtest_image)).astype(
+            __img.save(__file_path)
+            __xtest_image = load_img(__file_path, target_size=(100, 100, 3))
+            __xtest_image = img_to_array(__xtest_image)
+            __xtest_image = np.expand_dims(__xtest_image, axis=0)
+            _predictions = (self._covid_19_model.predict(__xtest_image)).astype(
                 "int32"
             )
             # print(_predictions)
-            _predictions = _predictions[0][0]
-            raddr, rlink, rcity = get_hospitals("covid")
-            if _predictions == 0:
-                _predictions = "Covid 19 Negative"
-            elif _predictions == 1:
-                _predictions = "Covid 19 Positive"
+            __predictions = _predictions[0][0]
+            __raddr, __rlink,__rcity = get_hospitals("covid")
+            if __predictions == 0:
+                __predictions = "Covid 19 Negative"
+            elif __predictions == 1:
+                __predictions = "Covid 19 Positive"
             return render_template(
-                "answer.html", res=_predictions, raddr=raddr, rlink=rlink, rcity=rcity
+                "answer.html", res=__predictions, raddr=__raddr, rlink=__rlink, rcity=__rcity
             )
 
 
@@ -62,85 +66,85 @@ class Brain_Tumor:
 
     # preprocessing for brain Tumor module
     def preprocess_img_mri(self, img_path):
-        _xtest_image = load_img(img_path, target_size=(150, 150, 3))
-        _xtest_image = img_to_array(_xtest_image)
-        _xtest_image = np.expand_dims(_xtest_image, axis=0)
-        _predictions = (self._mri_model.predict(_xtest_image) > 0.5).astype("int32")
-        return _predictions
+        __xtest_image = load_img(img_path, target_size=(150, 150, 3))
+        __xtest_image = img_to_array(__xtest_image)
+        __xtest_image = np.expand_dims(__xtest_image, axis=0)
+        __predictions = (self._mri_model.predict(__xtest_image) > 0.5).astype("int32")
+        return __predictions
     
     def get_tumor_result(self):
         if request.method == "POST":
-            _labels = [
+            __labels = [
                 "Brain Tumor type- Glioma",
                 "Brain Tumor type-Meningioma",
                 "Don't Worry, you don't have tumor",
                 "Brain Tumor type-Pituitary",
             ]
-            _img = request.files["mri"]
-            _img.save(
+            __img = request.files["mri"]
+            __img.save(
                 os.path.join(
                     os.path.abspath(os.path.dirname(__file__)),
                     app.config["UPLOAD_FOLDER"],
-                    secure_filename(_img.filename),
+                    secure_filename(__img.filename),
                 )
             )
             file_path = os.path.join(
                 os.path.abspath(os.path.dirname(__file__)),
                 app.config["UPLOAD_FOLDER"],
-                secure_filename(_img.filename),
+                secure_filename(__img.filename),
             )
             # print(file_path)
             result = self.preprocess_img_mri(file_path)
-            _raddr, _rlink, _rcity = get_hospitals("brain")
+            __raddr, __rlink, __rcity = get_hospitals("brain")
             return render_template(
                 "answer.html",
-                res=_labels[(np.where(result[0] == 1))[0][0]],
-                raddr=_raddr,
-                rlink=_rlink,
-                rcity=_rcity,
+                res=__labels[(np.where(result[0] == 1))[0][0]],
+                raddr=__raddr,
+                rlink=__rlink,
+                rcity=__rcity,
             )
 
 class Bone_Fracture:
-    _bone_model = load_model(r"Trained_Models\best_model_bone.h5")
+    __bone_model = load_model(r"Trained_Models\best_model_bone.h5")
     def getbone(self):
         if request.method == "POST":
-            _img = request.files["bone"]
-            _file_path = os.path.join(
+            __img = request.files["bone"]
+            __file_path = os.path.join(
                 os.path.abspath(os.path.dirname(__file__)),
                 app.config["UPLOAD_FOLDER"],
-                secure_filename(_img.filename),
+                secure_filename(__img.filename),
             )
-            _img.save(_file_path)
-            _xtest_image = load_img(_file_path, target_size=(224, 224))
-            _xtest_image = img_to_array(_xtest_image)
-            _xtest_image = np.expand_dims(_xtest_image, axis=0)
-            _predictions = self._bone_model.predict(_xtest_image)
-            _predictions = np.argmax(_predictions, axis=1)
-            print(_predictions[0])
-            _raddr, _rlink, _rcity = get_hospitals("bone")
-            if _predictions[0] == 0:
+            __img.save(__file_path)
+            __xtest_image = load_img(__file_path, target_size=(224, 224))
+            __xtest_image = img_to_array(__xtest_image)
+            __xtest_image = np.expand_dims(__xtest_image, axis=0)
+            __predictions = self._bone_model.predict(__xtest_image)
+            __predictions = np.argmax(_predictions, axis=1)
+            print(__predictions[0])
+            __raddr, __rlink, __rcity = get_hospitals("bone")
+            if __predictions[0] == 0:
                 _predictions = "Bone Fractured"
             else:
                 _predictions = "Bone Not Fractured"
             print(_predictions)
-            _bone = True
-            return render_template("answer.html", res=_predictions, raddr=_raddr, rlink=_rlink, rcity=_rcity, bone=_bone)
+            __bone = True
+            return render_template("answer.html", res=__predictions, raddr=__raddr, rlink=__rlink, rcity=__rcity, bone=__bone)
 
     
+# -------------------------------------------------------------------------------------------------------------
 
-
-def get_hospitals(disease):
-    _rows = pd.read_csv(
-        r"C:\Users\asus\OneDrive\Ked data\VS Code\Python\Health-Care\static\Covid.csv"
-    )
-    _hosdetail = _rows[_rows["Diseases"] == disease]
-    # create list for Address, hospital name,link
-    _raddr, _rlink, _rcity = (
-        list(_hosdetail["Address"]),
-        list(_hosdetail["Google Map Link"]),
-        list(_hosdetail["City"]),
-    )
-    return (_raddr, _rlink, _rcity)
+# def get_hospitals(disease):
+#     __rows = pd.read_csv(
+#         r"C:\Users\asus\OneDrive\Ked data\VS Code\Python\Health-Care\static\Covid.csv"
+#     )
+#     __hosdetail = __rows[__rows["Diseases"] == disease]
+#     # create list for Address, hospital name,link
+#     __raddr, __rlink, __rcity = (
+#         list(__hosdetail["Address"]),
+#         list(__hosdetail["Google Map Link"]),
+#         list(__hosdetail["City"]),
+#     )
+#     return (__raddr, __rlink, __rcity)
 
 
 # def create_connection(db_file):
@@ -158,45 +162,45 @@ def get_hospitals(disease):
 # model = pickle.load(open("Trained_Models/heart.pkl", "rb"))
 # model_diabetes = pickle.load(open("Trained_Models/DiabetesModel96.pkl", "rb"))
 
-class hospital(db.Model):
-    userName = db.Column(db.String, primary_key=True, nullable=False)
-    address = db.Column(db.String, primary_key=False, nullable=False)
-    link = db.Column(db.String, primary_key=False, nullable=False)
-    city = db.Column(db.String, primary_key=False, nullable=False)
-    disease = db.Column(db.String, primary_key=False, nullable=False)
+# class hospital(db.Model):
+#     userName = db.Column(db.String, primary_key=True, nullable=False)
+#     address = db.Column(db.String, primary_key=False, nullable=False)
+#     link = db.Column(db.String, primary_key=False, nullable=False)
+#     city = db.Column(db.String, primary_key=False, nullable=False)
+#     disease = db.Column(db.String, primary_key=False, nullable=False)
 
 
 @app.route("/predict", methods=["POST"])
 def predict():
-    _text = request.get_json().get("message")
-    _res = chatbot_response(_text)
-    _message = {"answer": _res}
-    return jsonify(_message)
+    __text = request.get_json().get("message")
+    __res = chatbot_response(__text)
+    __message = {"answer": __res}
+    return jsonify(__message)
 
 
-class Mainn(db.Model):
-    mail = db.Column(db.String, primary_key=True)
-    age = db.Column(db.Integer, nullable=False)
-    cp = db.Column(db.String(300), nullable=False)
-    cardio = db.Column(db.String, nullable=False)
-    hr = db.Column(db.Integer, nullable=False)
-    bs = db.Column(db.String, nullable=False)
-    bp = db.Column(db.Integer, nullable=False)
-    sc = db.Column(db.Integer, nullable=False)
-    enduced = db.Column(db.String, nullable=False)
+# class Mainn(db.Model):
+#     mail = db.Column(db.String, primary_key=True)
+#     age = db.Column(db.Integer, nullable=False)
+#     cp = db.Column(db.String(300), nullable=False)
+#     cardio = db.Column(db.String, nullable=False)
+#     hr = db.Column(db.Integer, nullable=False)
+#     bs = db.Column(db.String, nullable=False)
+#     bp = db.Column(db.Integer, nullable=False)
+#     sc = db.Column(db.Integer, nullable=False)
+#     enduced = db.Column(db.String, nullable=False)
 
 
-class Old_Authentication(db.Model):
-    email = db.Column(db.String, primary_key=True)
-    password = db.Column(db.String, nullable=False)
+# class Old_Authentication(db.Model):
+#     email = db.Column(db.String, primary_key=True)
+#     password = db.Column(db.String, nullable=False)
 
 
-class New_Authentication(db.Model):
-    name = db.Column(db.String, nullable=False)
-    email = db.Column(db.String, primary_key=True)
-    password = db.Column(db.String, nullable=False)
-    gender = db.Column(db.String, nullable=False)
-    age = db.Column(db.Integer, nullable=False)
+# class New_Authentication(db.Model):
+#     name = db.Column(db.String, nullable=False)
+#     email = db.Column(db.String, primary_key=True)
+#     password = db.Column(db.String, nullable=False)
+#     gender = db.Column(db.String, nullable=False)
+#     age = db.Column(db.Integer, nullable=False)
 
 
 # preprocessing codes
@@ -205,41 +209,59 @@ class New_Authentication(db.Model):
 @app.route("/login", methods=["GET", "POST"])
 def login_user():
     if request.method == "POST":
-        mail = request.form["mail"]
-        password = request.form["password"]
-        print(mail, password)
-        user = New_Authentication.query.filter_by(email=mail).first()
-
-        if user:
-            tag = ""
-            with db.engine.connect() as conn:
-                result = conn.execute(
-                    select(New_Authentication.password).where(
-                        New_Authentication.email == mail
-                    )
-                )
-                passw = str(result.all()[0][0])
-                name = conn.execute(
-                    select(New_Authentication.name).where(
-                        New_Authentication.email == mail
-                    )
-                )
-                app.config["USERNAME"] = str(name.all()[0][0])
-                print(app.config["USERNAME"], passw)
-
-            if passw == password:
-                app.config["LOGIN_STATUS"] = True
-                print(app.config["USERNAME"])
-                return redirect("/")
-
+        __mail = request.form["mail"]
+        __password = request.form["password"]
+        __password=__password.encode('utf-8')
+        print(__mail, __password)
+        email_list=db.Users.find_one({"email":__mail})
+        print(email_list)
+        if len(email_list):
+            __pass=str(email_list["encrypted_password"])
+            print(__pass)
+            if bcrypt.checkpw(__password,__pass):
+                return render_template("/")
             else:
-                app.config["USERNAME"] = ""
-                tag = "Wrong password"
-                return render_template("login.html", alrmsg=tag)
-
+                return render_template("/login",alrmsg="Incorrect Password")
+            
         else:
-            tag = "No such User Exists! Please Register Yourself!"
-            return render_template("login.html", alrmsg=tag)
+            return render_template("/login",alrmsg="User doesn't exist! Please register yourself")
+
+
+
+
+
+        # user = New_Authentication.query.filter_by(email=__mail).first()
+
+        # if user:
+        #     tag = ""
+        #     with db.engine.connect() as conn:
+        #         result = conn.execute(
+        #             select(New_Authentication.password).where(
+        #                 New_Authentication.email == __mail
+        #             )
+        #         )
+        #         passw = str(result.all()[0][0])
+        #         name = conn.execute(
+        #             select(New_Authentication.name).where(
+        #                 New_Authentication.email ==__ mail
+        #             )
+        #         )
+        #         app.config["USERNAME"] = str(name.all()[0][0])
+        #         print(app.config["USERNAME"], passw)
+
+        #     if passw == password:
+        #         app.config["LOGIN_STATUS"] = True
+        #         print(app.config["USERNAME"])
+        #         return redirect("/")
+
+        #     else:
+        #         app.config["USERNAME"] = ""
+        #         tag = "Wrong password"
+        #         return render_template("login.html", alrmsg=tag)
+
+        # else:
+        #     tag = "No such User Exists! Please Register Yourself!"
+        #     return render_template("login.html", alrmsg=tag)
     return render_template("login.html")
 
 
@@ -263,23 +285,53 @@ def refresh():
         count=app.config["LOGIN_COUNT"],
     )
 
+# -------------------------------
 
+  
+# example password
+password = 'passwordabc'
+  
+# converting password to array of bytes
+bytes = password.encode('utf-8')
+  
+# generating the salt
+salt = bcrypt.gensalt()
+  
+# Hashing the password
+hash = bcrypt.hashpw(bytes, salt)
+  
+# Taking user entered password 
+userPassword =  'passwordabc'
+  
+# encoding user password
+userBytes = userPassword.encode('utf-8')
+  
+# checking password
+result = bcrypt.checkpw(userBytes, hash)
+
+# ------------------
 @app.route("/registration", methods=["GET", "POST"])
 def registration():
     if request.method == "POST":
-        fn = request.form["fname"]
-        ln = request.form["lname"]
-        email = request.form["email"]
-        gender = request.form["inlineRadioOptions"]
-        age = int(request.form["age"])
-        password = request.form["password"]
-        name = fn + " " + ln
-        print(name, email, password, email, gender)
-        new_auth = New_Authentication(
-            name=name, email=email, password=password, gender=gender, age=age
-        )
-        db.session.add(new_auth)
-        db.session.commit()
+        __fn = request.form["fname"]
+        __ln = request.form["lname"]
+        __email = request.form["email"]
+        __gender = request.form["inlineRadioOptions"]
+        __age = int(request.form["age"])
+        __password = request.form["password"]
+        __bytes=__password.encode('utf-8')
+        __salt=bcrypt.gensalt()
+        __enc_password=bcrypt.hashpw(__bytes,__salt)
+        __name = __fn + " " + __ln
+        # print(name, email, password, email, gender)
+        new_doc={
+            "name":__name,
+            "email":__email,
+            "gender":__gender,
+            "age":__age,
+            "encrypted_password":__enc_password
+        }
+        db.Users.insert_one(new_doc)
         print("Committed")
         return redirect("/login")
     else:
@@ -295,15 +347,15 @@ def Covid_19():
     )
 
 
-@app.route("/Heart_Disease_Prediction")
-def Heart_Disease_Prediction():
-    if app.config["LOGIN_STATUS"]:
-        return render_template(
-            "Heart_Disease.html",
-            status=app.config["LOGIN_STATUS"],
-            username=app.config["USERNAME"],
-        )
-    return redirect("/login")
+# @app.route("/Heart_Disease_Prediction")
+# def Heart_Disease_Prediction():
+#     if app.config["LOGIN_STATUS"]:
+#         return render_template(
+#             "Heart_Disease.html",
+#             status=app.config["LOGIN_STATUS"],
+#             username=app.config["USERNAME"],
+#         )
+#     return redirect("/login")
 
 
 # @app.route("/diabetes", methods=["GET", "POST"])
@@ -382,25 +434,24 @@ def Brain_Tumor_Detection():
 # prediction code for brain tumor detection
 def getmri():
     b=Brain_Tumor()
-    
     return b.get_tumor_result()
 
 
 # def searchHos():
 
 
-def searchHos():
-    db_file = r"C:\Users\asus\OneDrive\Ked data\VS Code\Python\Health-Care\instance\database.db"
-    conn = None
-    try:
-        conn = sqlite3.connect(db_file)
-    except sqlite3.Error as e:
-        print(e)
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM Sheet1 WHERE diseases='covid'")
-    rows = cur.fetchall()
-    for row in rows:
-        print(row)
+# def searchHos():
+#     db_file = r"C:\Users\asus\OneDrive\Ked data\VS Code\Python\Health-Care\instance\database.db"
+#     conn = None
+#     try:
+#         conn = sqlite3.connect(db_file)
+#     except sqlite3.Error as e:
+#         print(e)
+#     cur = conn.cursor()
+#     cur.execute("SELECT * FROM Sheet1 WHERE diseases='covid'")
+#     rows = cur.fetchall()
+#     for row in rows:
+#         print(row)
 
 
 @app.route("/getcovidresult", methods=["POST"])
