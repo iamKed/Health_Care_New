@@ -63,20 +63,20 @@
 
 {%block content2%}
 
-{% if status == true %}
+{% if model.__login_status == true %}
 
 <a href="javascript:void(0);" class="btn-user dropdown-toggle media align-items-center" data-toggle="dropdown"
   data-sidebar="true" aria-expanded="false">
   <img class="mr-2" src="/static/profile.png" style="width:40px; height:40px;" alt="avatar">
-  {{ username }}
+  {{ model.__username }}
 </a>
 <ul class="dropdown-menu dropdown-menu-right" role="menu">
   <a class="dropdown-item" href="/logout">Logout</a>
 </ul>
 {% else %}
-<a class="nav-link text-muted mx-3 slide" href="/login">
+<a class="nav-link slide" href="/login" id="login1">
   Login
-</a> 
+</a>
   {% endif %}
 
 {%endblock%}
