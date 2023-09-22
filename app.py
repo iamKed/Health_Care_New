@@ -1,12 +1,13 @@
-from flask import Flask, render_template, request, redirect, session, jsonify
+from flask import Flask, render_template, request, redirect, jsonify
 import numpy as np
 import pandas as pd
 import os
+import base64
 from ChatBot_Response import chatbot_response
 from keras.utils import load_img, img_to_array
 from keras.models import load_model
 import warnings
-
+from PIL import Image
 warnings.filterwarnings("ignore")
 from pymongo import MongoClient
 import bcrypt
@@ -21,26 +22,26 @@ app.secret_key = b"82736781_@*@&(796*5&^5)"
 # skin_model = load_model(r"Trained_Models\skin_d.h5")
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mongodb://localhost:27017"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-_answer = ""
 
 
 class App_Data:
     __username = str()
     __login_status = False
     __msg = str()
-
+    __user={}
     def __init__(self):
         print("Current status")
         # print("Login Status: ", self.__login_status)
         print("Current status: ", self.__username)
 
-    def setstatus(self, username=False, login_status=False, msg=""):
+    def setstatus(self, username=False, login_status=False, msg="",user={}):
         self.__username = username
         self.__login_status = login_status
         self.__msg = msg
+        self.__user=user
 
     def getstatus(self):
-        return [self.__username, self.__login_status, self.__msg]
+        return [self.__username, self.__login_status, self.__msg,self.__user]
 
     # def start(self,username):
     #     print(self.__model.start())
@@ -59,36 +60,10 @@ model = App_Data()
 
 class Covid_Disease:
     __covid_19_model = load_model(r"Trained_Models\covid_model.h5")
+    def getmodel(self):
+        return self.__covid_19_model
 
-    def getcovidresult(self):
-        if request.method == "POST":
-            self.__img = request.files["covid"]
-            self.__file_path = os.path.join(
-                os.path.abspath(os.path.dirname(__file__)),
-                app.config["UPLOAD_FOLDER"],
-                secure_filename(self.__img.filename),
-            )
-            self.__img.save(self.__file_path)
-            self.__xtest_image = load_img(self.__file_path, target_size=(100, 100, 3))
-            self.__xtest_image = img_to_array(self.__xtest_image)
-            self.__xtest_image = np.expand_dims(self.__xtest_image, axis=0)
-            self.__predictions = (
-                self.__covid_19_model.predict(self.__xtest_image)
-            ).astype("int32")
-            # print(_predictions)
-            self.__predictions = self.__predictions[0][0]
-            self.__raddr, self.__rlink, self.__rcity = get_hospitals("covid")
-            if self.__predictions == 0:
-                self.__predictions = "Covid 19 Negative"
-            elif self.__predictions == 1:
-                self.__predictions = "Covid 19 Positive"
-            return render_template(
-                "answer.html",
-                res=self.__predictions,
-                raddr=self.__raddr,
-                rlink=self.__rlink,
-                rcity=self.__rcity,
-            )
+    
 
 
 class Brain_Tumor:
@@ -172,61 +147,27 @@ class Bone_Fracture:
             )
 
 
-class Authentication:
-    def login(self):
-        # __password = __password
-        # print(__mail, __password)
-        self.__email_list = db.Users.find_one({"email": request.form["mail"]})
-        print(self.__email_list)
-        if self.__email_list:
-            # print(type(__pass))
-            # print(__pass)
-            if bcrypt.checkpw(
-                (request.form["password"]).encode("utf-8"),
-                self.__email_list["encrypted_password"],
-            ):
-                print(self.__email_list["name"])
-                model.setstatus(self.__email_list["name"], True)
-
-                # return redirect("/")'
-                return redirect("/")
-            else:
-                model.setstatus(msg="Wrong Password")
-                return render_template("login.html", viewBag=model)
-
-        else:
-            model.setstatus(msg="User doesn't exist! Please register yourself")
-            return render_template("login.html", viewBag=model)
-
-    def register(self):
-        self.__fn = request.form["fname"]
-        self.__ln = request.form["lname"]
-        self.__email = request.form["email"]
-        self.__gender = request.form["inlineRadioOptions"]
-        self.__age = int(request.form["age"])
-        self.__password = request.form["password"]
-        self.__bytes = self.__password.encode("utf-8")
-        self.__salt = bcrypt.gensalt()
-        self.__enc_password = bcrypt.hashpw(self.__bytes, self.__salt)
-        self.__name = self.__fn + " " + self.__ln
-        # print(name, email, password, email, gender)
-        self.__new_doc = {
-            "name": self.__name,
-            "email": self.__email,
-            "gender": self.__gender,
-            "age": self.__age,
-            "encrypted_password": self.__enc_password,
-        }
-        db.Users.insert_one(self.__new_doc)
-        print("Committed")
-        return redirect("/login")
-
-    def logout(self):
-        model.setstatus()
-        return redirect("/")
-
-
 # -------------------------------------------------------------------------------------------------------------
+
+
+def insert_image(img,disease_name="Profile"):
+    # with open(img, "rb") as image_file:
+    encoded_string = base64.b64encode(img)
+    # current_user=db.Users.find_one()
+    abc = db.Users.update_one({"email":((model.getstatus())[3])["email"]},{"$set":{"Diseases":[ {disease_name:encoded_string}]}},upsert=True)
+    print("Success")
+
+
+def retrieve_image():
+    
+    data = db.Users.find_one({"email":(model.getstatus()[3])["email"]})
+    print("Type:", type(data))
+    # print(data)
+    print("__________________________________________________________________________________")
+    # print(img1)
+    print(data["Diseases"])
+    with open("test2.jpg", "wb") as im:
+        im.write(base64.b64decode(img1))
 
 
 def get_hospitals(disease):
@@ -265,16 +206,38 @@ def predict():
 @app.route("/login", methods=["GET", "POST"])
 def login_user():
     if request.method == "POST":
-        a = Authentication()
-        a.login()
+        email_list = db.Users.find_one({"email": request.form["mail"]})
+        print(email_list)
+        if email_list:
+            # print(type(__pass))
+            # print(__pass)
+            try:
+                if bcrypt.checkpw(
+                    (request.form["password"]).encode("utf-8"),
+                    email_list["encrypted_password"],
+                ):
+                    print(email_list["name"])
+                    model.setstatus(email_list["name"], True,user=email_list)
+                    return redirect("/")
+                else:
+                    # print("Here wroo")
+                    model.setstatus(msg="Wrong Password")
+                    return render_template("login.html", viewBag=model)
+            except:
+                model.setstatus(msg="Try Again")
+                return redirect("/login")
+
+        else:
+            model.setstatus(msg="User doesn't exist! Please register yourself")
+            return render_template("login.html", viewBag=model)
     model.setstatus()
     return render_template("login.html", viewBag=model)
 
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout_user():
-    a = Authentication()
-    a.logout()
+    model.setstatus()
+    return redirect("/")
 
 
 @app.route("/")
@@ -285,13 +248,72 @@ def refresh():
 @app.route("/registration", methods=["GET", "POST"])
 def registration():
     if request.method == "POST":
-        a = Authentication()
-        a.register()
-    return render_template("registration.html")
+        fn = request.form["fname"]
+        ln = request.form["lname"]
+        email = request.form["email"]
+        gender = request.form["inlineRadioOptions"]
+        age = int(request.form["age"])
+        password = request.form["password"]
+        bytes = password.encode("utf-8")
+        salt = bcrypt.gensalt()
+        enc_password = bcrypt.hashpw(bytes, salt)
+        name = fn + " " + ln
+        # print(name, email, password, email, gender)
+        new_doc = {
+            "name": name,
+            "email": email,
+            "gender": gender,
+            "age": age,
+            "encrypted_password": enc_password,
+        }
+        try :
+            db.Users.insert_one(new_doc)
+        except:
+            model.setstatus(msg="User already exist! Please login to continue ")
+            return redirect("/registration")
+        print("Committed")
+        return redirect("/login")
+    model.setstatus()
+    return render_template("registration.html",viewBag=model)
 
 
-@app.route("/Covid_19")
+@app.route("/Covid_19",methods=["GET","POST"])
 def Covid_19():
+    if request.method == "POST":
+        cobj=Covid_Disease()
+        covid_19_model=cobj.getmodel()
+        img = request.files["covid"].read()
+        img=base64.b64encode(img)
+        print(img,"______________",type(img))
+        # img=Image.open(img)
+        # img=base64.b64encode(img)
+        # file_path = os.path.join(
+        #     os.path.abspath(os.path.dirname(__file__)),
+        #     app.config["UPLOAD_FOLDER"],
+        #     secure_filename(img.filename),
+        # )
+        # img.save(file_path)
+        insert_image(img,"Covid-19")
+        img=retrieve_image()
+        xtest_image = load_img(img, target_size=(100, 100, 3))
+        xtest_image = img_to_array(xtest_image)
+        xtest_image = np.expand_dims(xtest_image, axis=0)
+        predictions = (covid_19_model.predict(xtest_image)).astype(
+            "int32"
+        )
+        predictions = predictions[0][0]
+        raddr, rlink, rcity = get_hospitals("covid")
+        if predictions == 0:
+            predictions = "Covid 19 Negative"
+        elif predictions == 1:
+            predictions = "Covid 19 Positive"
+        return render_template(
+            "answer.html",
+            res=predictions,
+            raddr=raddr,
+            rlink=rlink,
+            rcity=rcity,
+        )
     return render_template("Covid_19.html", viewBag=model)
 
 
@@ -390,10 +412,7 @@ def getmri():
 #         print(row)
 
 
-@app.route("/getcovidresult", methods=["POST"])
-def get_covid_result():
-    c = Covid_Disease()
-    return c.getcovidresult()
+
 
 
 # @app.route("/getskin", methods=["POST"])

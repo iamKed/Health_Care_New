@@ -1,7 +1,7 @@
 {%extends "index.html"%}
 {%block content%}
 
-{% if  (viewBag.getstatus())[1]%}
+{% if  (viewBag.getstatus())[1] %}
 <div class="alert alert-success alert-dismissible">
   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
   <strong>Login Successful!</strong> Welcome back {{(viewBag.getstatus())[0]}} !
@@ -29,30 +29,14 @@
 </div>
 
 <h2 class="text-3xl font-medium title-font text-gray-900 mx-3 text-left dark:text-dark-600">Steps</h2>
-<div style="height: 0; padding-bottom: calc(53.13%); position:relative; width: 100%;"><img
-    allow="autoplay; gyroscope;" allowfullscreen height="100%" referrerpolicy="strict-origin"
+<div style="height: 0; padding-bottom: calc(53.13%); position:relative; width: 100%;">
+  <img    allow="autoplay; gyroscope;" allowfullscreen height="100%" referrerpolicy="strict-origin"
     src="static\homepage.gif"
     style="border:0; height:100%; left:0; overflow:hidden; position:absolute; top:0; width:100%"
-    width="100%"></img></div>
-<!-- --------------------------------------------------- -->
-
-<!-- --------------------------------------------------- -->
-<!-- <div class="bg-image hover-overlay ripple my-3" style="display: flex; align-items: center; justify-content: center">
- 
-  <blockquote class="blockquote text-center my-3 mx-3">
-    <p class="mb-0">Heart disease let’s defeat, Keep a healthy Heart Beat</p>
-    <p class="mb-0">Commit to be fit</p>
-    <p class="mb-0">Fight the fight, find the Cure</p>
-    <p class="mb-0">Diet cures more than doctors</p>
-    <footer class="blockquote-footer">Team Hacking Paradox</footer>
-  </blockquote>
-</div> -->
+    width="100%"> </div>
 
 
 
-
-
-<!-- <h1 class="my-3 mx-3 text-xl" id="modules">Modules</h1> -->
 <h2 class="text-3xl font-medium title-font text-gray-900  mx-3 my-20 text-center dark:text-dark-600" id="modules">
   Modules</h2>
 
@@ -196,7 +180,22 @@
   <span id="tobedis">{{ (viewBag.getstatus())[0]}}</span>
 </a>
 <ul class="dropdown-menu dropdown-menu-right" role="menu">
-  <a class="dropdown-item" href="/logout">Logout</a>
+  <div class="z-50 my-4 w-56 text-base list-none bg-white rounded divide-y divide-gray-100 shadow dark:bg-gray-700 dark:divide-gray-600" id="dropdownMenu">
+    <div class="py-3 px-4">
+        <span class="block text-sm font-semibold text-gray-900 dark">{{(viewBag.getstatus())[0]}}</span>
+    </div>
+    <ul class="py-1 text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
+        <li>
+            <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-400 dark:hover:text-white">My profile</a>
+        </li>
+    </ul>
+    
+    <ul class="py-1 text-gray-500 dark:text-gray-400" aria-labelledby="dropdown">
+        <li>
+            <a  href="/logout" class="block py-2 px-4 text-sm hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
+        </li>
+    </ul>
+</div>
 </ul>
 {% else %}
 <a class="nav-link slide" href="/login" id="login1">
