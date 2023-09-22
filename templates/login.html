@@ -34,9 +34,9 @@
                     <input type="password" id="pass" class="form-control form-control-lg" required name="password" />
                     <label class="form-label" for="pass">Password</label>
                   </div>
-                  {% if alrmsg %}
+                  {% if (viewBag.getstatus())[2] !="" %}
                   <div class="alert alert-danger" style="color: red;">
-                    {{alrmsg}} !
+                    {{(viewBag.getstatus())[2]}} !
                     <span></span>
                   </div>
                   {%else%}

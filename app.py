@@ -6,26 +6,57 @@ from ChatBot_Response import chatbot_response
 from keras.utils import load_img, img_to_array
 from keras.models import load_model
 import warnings
-import Authentication as auth
+
 warnings.filterwarnings("ignore")
 from pymongo import MongoClient
 import bcrypt
+
 connection = MongoClient("localhost", 27017)
 db = connection["HealthCare"]
 from werkzeug.utils import secure_filename
+
 app = Flask(__name__)
 app.secret_key = b"82736781_@*@&(796*5&^5)"
 # covid_19_model = load_model(r"Trained_Models\covid_model.h5")
 # skin_model = load_model(r"Trained_Models\skin_d.h5")
 # app.config["SQLALCHEMY_DATABASE_URI"] = "mongodb://localhost:27017"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-# db = SQLAlchemy(app)
-app.config["LOGIN_STATUS"] = False
-app.config["USERNAME"] = str("")
-app.config["LOGIN_COUNT"] = 0
 _answer = ""
 
-new_user=auth.new_user()
+
+class App_Data:
+    __username = str()
+    __login_status = False
+    __msg = str()
+
+    def __init__(self):
+        print("Current status")
+        # print("Login Status: ", self.__login_status)
+        print("Current status: ", self.__username)
+
+    def setstatus(self, username=False, login_status=False, msg=""):
+        self.__username = username
+        self.__login_status = login_status
+        self.__msg = msg
+
+    def getstatus(self):
+        return [self.__username, self.__login_status, self.__msg]
+
+    # def start(self,username):
+    #     print(self.__model.start())
+    #     return [self.__msg,self.__login_status,
+    #     self.__model.start(username)]
+
+    # def logout(self):
+    #     self.__login_status=False
+    #     self.__model.start()
+    #     return self.__model
+
+
+global model
+model = App_Data()
+
+
 class Covid_Disease:
     __covid_19_model = load_model(r"Trained_Models\covid_model.h5")
 
@@ -68,7 +99,9 @@ class Brain_Tumor:
         self.__xtest_image = load_img(img_path, target_size=(150, 150, 3))
         self.__xtest_image = img_to_array(self.__xtest_image)
         self.__xtest_image = np.expand_dims(self.__xtest_image, axis=0)
-        self.__predictions = (self.__mri_model.predict(self.__xtest_image) > 0.5).astype("int32")
+        self.__predictions = (
+            self.__mri_model.predict(self.__xtest_image) > 0.5
+        ).astype("int32")
         return self.__predictions
 
     def get_tumor_result(self):
@@ -138,6 +171,61 @@ class Bone_Fracture:
                 bone=self.__bone,
             )
 
+
+class Authentication:
+    def login(self):
+        # __password = __password
+        # print(__mail, __password)
+        self.__email_list = db.Users.find_one({"email": request.form["mail"]})
+        print(self.__email_list)
+        if self.__email_list:
+            # print(type(__pass))
+            # print(__pass)
+            if bcrypt.checkpw(
+                (request.form["password"]).encode("utf-8"),
+                self.__email_list["encrypted_password"],
+            ):
+                print(self.__email_list["name"])
+                model.setstatus(self.__email_list["name"], True)
+
+                # return redirect("/")'
+                return redirect("/")
+            else:
+                model.setstatus(msg="Wrong Password")
+                return render_template("login.html", viewBag=model)
+
+        else:
+            model.setstatus(msg="User doesn't exist! Please register yourself")
+            return render_template("login.html", viewBag=model)
+
+    def register(self):
+        self.__fn = request.form["fname"]
+        self.__ln = request.form["lname"]
+        self.__email = request.form["email"]
+        self.__gender = request.form["inlineRadioOptions"]
+        self.__age = int(request.form["age"])
+        self.__password = request.form["password"]
+        self.__bytes = self.__password.encode("utf-8")
+        self.__salt = bcrypt.gensalt()
+        self.__enc_password = bcrypt.hashpw(self.__bytes, self.__salt)
+        self.__name = self.__fn + " " + self.__ln
+        # print(name, email, password, email, gender)
+        self.__new_doc = {
+            "name": self.__name,
+            "email": self.__email,
+            "gender": self.__gender,
+            "age": self.__age,
+            "encrypted_password": self.__enc_password,
+        }
+        db.Users.insert_one(self.__new_doc)
+        print("Committed")
+        return redirect("/login")
+
+    def logout(self):
+        model.setstatus()
+        return redirect("/")
+
+
 # -------------------------------------------------------------------------------------------------------------
 
 
@@ -154,18 +242,6 @@ def get_hospitals(disease):
     )
     return (__raddr, __rlink, __rcity)
 
-
-# def create_connection(db_file):
-
-#     print(db_file)
-#     conn = None
-#     try:
-#         conn = sqlite3.connect(db_file)
-#     except sqlite3.Error as e:
-#         print(e)
-
-#     return conn
-# r=create_connection(r'C:\Users\asus\OneDrive\Ked data\VS Code\Python\Health-Care\instance\database.db')
 
 # model = pickle.load(open("Trained_Models/heart.pkl", "rb"))
 # model_diabetes = pickle.load(open("Trained_Models/DiabetesModel96.pkl", "rb"))
@@ -186,138 +262,38 @@ def predict():
     return jsonify(__message)
 
 
-# class Mainn(db.Model):
-#     mail = db.Column(db.String, primary_key=True)
-#     age = db.Column(db.Integer, nullable=False)
-#     cp = db.Column(db.String(300), nullable=False)
-#     cardio = db.Column(db.String, nullable=False)
-#     hr = db.Column(db.Integer, nullable=False)
-#     bs = db.Column(db.String, nullable=False)
-#     bp = db.Column(db.Integer, nullable=False)
-#     sc = db.Column(db.Integer, nullable=False)
-#     enduced = db.Column(db.String, nullable=False)
-
-
-# class Old_Authentication(db.Model):
-#     email = db.Column(db.String, primary_key=True)
-#     password = db.Column(db.String, nullable=False)
-
-
-# class New_Authentication(db.Model):
-#     name = db.Column(db.String, nullable=False)
-#     email = db.Column(db.String, primary_key=True)
-#     password = db.Column(db.String, nullable=False)
-#     gender = db.Column(db.String, nullable=False)
-#     age = db.Column(db.Integer, nullable=False)
-
-
-# preprocessing codes
-
-
 @app.route("/login", methods=["GET", "POST"])
 def login_user():
     if request.method == "POST":
-        __mail = request.form["mail"]
-        __password = request.form["password"]
-        __password = __password.encode("utf-8")
-        print(__mail, __password)
-        email_list = db.Users.find_one({"email": __mail})
-        print(email_list)
-        if email_list:
-            __pass = email_list["encrypted_password"]
-            print(type(__pass))
-            print(__pass)
-            if bcrypt.checkpw(__password, __pass):
-                new_user.__login_status = True
-                new_user.__username = email_list["name"]
-                return redirect("/")
-            else:
-                return render_template("login.html", alrmsg="Incorrect Password")
+        a = Authentication()
+        a.login()
+    model.setstatus()
+    return render_template("login.html", viewBag=model)
 
-        else:
-            return render_template(
-                "login.html", alrmsg="User doesn't exist! Please register yourself"
-            )
-
-        # user = New_Authentication.query.filter_by(email=__mail).first()
-
-        # if user:
-        #     tag = ""
-        #     with db.engine.connect() as conn:
-        #         result = conn.execute(
-        #             select(New_Authentication.password).where(
-        #                 New_Authentication.email == __mail
-        #             )
-        #         )
-        #         passw = str(result.all()[0][0])
-        #         name = conn.execute(
-        #             select(New_Authentication.name).where(
-        #                 New_Authentication.email ==__ mail
-        #             )
-        #         )
-        #         app.config["USERNAME"] = str(name.all()[0][0])
-        #         print(app.config["USERNAME"], passw)
-
-        #     if passw == password:
-        #         app.config["LOGIN_STATUS"] = True
-        #         print(app.config["USERNAME"])
-        #         return redirect("/")
-
-        #     else:
-        #         app.config["USERNAME"] = ""
-        #         tag = "Wrong password"
-        #         return render_template("login.html", alrmsg=tag)
-
-        # else:
-        #     tag = "No such User Exists! Please Register Yourself!"
-        #     return render_template("login.html", alrmsg=tag)
-    return render_template("login.html")
 
 @app.route("/logout", methods=["GET", "POST"])
 def logout_user():
-    new_user=auth.new_user()
+    a = Authentication()
+    a.logout()
 
-    return redirect("/")
 
 @app.route("/")
 def refresh():
-    # print(app.config["USERNAME"], app.config["USERNAME"])
-    # if auth.new_user.__login_status:
-    return render_template("homepage.html", model=new_user)
+    return render_template("homepage.html", viewBag=model)
+
 
 @app.route("/registration", methods=["GET", "POST"])
 def registration():
     if request.method == "POST":
-        __fn = request.form["fname"]
-        __ln = request.form["lname"]
-        __email = request.form["email"]
-        __gender = request.form["inlineRadioOptions"]
-        __age = int(request.form["age"])
-        __password = request.form["password"]
-        __bytes = __password.encode("utf-8")
-        __salt = bcrypt.gensalt()
-        __enc_password = bcrypt.hashpw(__bytes, __salt)
-        __name = __fn + " " + __ln
-        # print(name, email, password, email, gender)
-        new_doc = {
-            "name": __name,
-            "email": __email,
-            "gender": __gender,
-            "age": __age,
-            "encrypted_password": __enc_password,
-        }
-        db.Users.insert_one(new_doc)
-        print("Committed")
-        return redirect("/login")
-   
+        a = Authentication()
+        a.register()
     return render_template("registration.html")
 
 
 @app.route("/Covid_19")
 def Covid_19():
-    return render_template(
-        "Covid_19.html",
-        model=new_user)
+    return render_template("Covid_19.html", viewBag=model)
+
 
 # @app.route("/Heart_Disease_Prediction")
 # def Heart_Disease_Prediction():
@@ -371,30 +347,22 @@ def Covid_19():
 
 @app.route("/Bone_Fracture_Detection")
 def Bone_Fracture_Detection():
-    if new_user.__login_status:
-        return render_template(
-            "Bone_Fracture.html",
-            model=new_user
-        )
+    if (model.getstatus())[1]:
+        return render_template("Bone_Fracture.html", viewBag=model)
     return redirect("/login")
 
 
 @app.route("/Skin_Cancer")
 def Skin_Cancer():
-    if new_user.__login_status:
-        return render_template(
-            "Skin_Cancer.html",
-            model=new_user
-        )
+    if (model.getstatus())[1]:
+        return render_template("Skin_Cancer.html", viewBag=model)
     return redirect("/login")
 
 
 @app.route("/Brain_Tumor_Detection")
 def Brain_Tumor_Detection():
-    if new_user.__login_status:
-        return render_template(
-            "Brain_Tumor.html",model=new_user
-        )
+    if (model.getstatus())[1]:
+        return render_template("Brain_Tumor.html", viewBag=model)
     return redirect("/login")
 
 

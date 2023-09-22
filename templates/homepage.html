@@ -1,13 +1,13 @@
 {%extends "index.html"%}
 {%block content%}
 
-{% if model.__login_status == true %}
+{% if  (viewBag.getstatus())[1]%}
 <div class="alert alert-success alert-dismissible">
   <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-  <strong>Login Successful!</strong> Welcome back {{model.__username}} !
+  <strong>Login Successful!</strong> Welcome back {{(viewBag.getstatus())[0]}} !
 </div>
 {% endif %}
-{% if model.__login_status == false%}
+{% if (viewBag.getstatus())[1] ==false%}
 <div class="alert alert-warning">
   <strong>Login Required!</strong> Please <a href="/login" class="alert-link">login</a> to continue using our
   Services...
@@ -145,7 +145,7 @@
         <h2 class="text-xl font-medium title-font text-slate-950 mt-5">Skin Cancer or Skin Disease Prediction</h2>
         <p class="text-base leading-relaxed mt-2 text-slate-950">Skin Disease Prediction using image of Skin <br>
           With supporting text below as a natural lead-in to additional content.</p>
-        <!-- {% if model.__login_status == true %} -->
+        <!-- {% if viewBag.__login_status == true %} -->
         <a href="/Skin_Cancer" class="text-Slate-50 inline-flex items-center mt-3 btn btn-outline-dark">Check Out
           <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
             class="w-4 h-4 ml-2" viewBox="0 0 24 24">
@@ -187,14 +187,13 @@
   <p class="mb-0">We will make Human Beings have a Better Life!</p>
   <footer class="blockquote-footer">Team Hacking Paradox</footer>
 </blockquote>
-
 {%endblock%}
 {%block content2%}
-{% if model.__login_status == true %}
+{% if (viewBag.getstatus())[1]  %}
 <a href="javascript:void(0);" class="btn-user dropdown-toggle media align-items-center" data-toggle="dropdown"
   data-sidebar="true" aria-expanded="false">
   <img class="mr-2" src="/static/profile.png" style="width:40px; height:40px;" alt="avatar">
-  <span id="tobedis">{{ model.__username }}</span>
+  <span id="tobedis">{{ (viewBag.getstatus())[0]}}</span>
 </a>
 <ul class="dropdown-menu dropdown-menu-right" role="menu">
   <a class="dropdown-item" href="/logout">Logout</a>
